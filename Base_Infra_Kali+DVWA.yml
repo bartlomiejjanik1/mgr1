@@ -1,0 +1,68 @@
+- name: Utwórz VM
+  hosts: localhost
+  connection: local
+  tasks:
+  - name: Utworz siec vnet
+    azure_rm_virtualnetwork:
+      resource_group: 1-b3a93a02-playground-sandbox
+      name: dvwaVNET
+      address_prefixes: "10.0.0.0/16"
+  - name: Dodaj podsiec
+    azure_rm_subnet:
+      resource_group: 1-b3a93a02-playground-sandbox
+      name: dvwaPodsiec
+      address_prefix: "10.0.1.0/24"
+      virtual_network: dvwaVNET
+  - name: Utworz publiczny adres
+    azure_rm_publicipaddress:
+      resource_group: 1-b3a93a02-playground-sandbox
+      allocation_method: Static
+      name: dvwaPublic
+    register: output_ip_address
+  - name: Publiczne IP VM
+    debug:
+      msg: "Publiczne IP to {{ output_ip_address.state.ip_address }}."
+  - name: Utworz Network Security Group i wpusc SSH oraz http
+    azure_rm_securitygroup:
+      resource_group: 1-b3a93a02-playground-sandbox
+      name: dvwaNSG
+      rules:
+        - name: SSH
+          protocol: Tcp
+          destination_port_range: 22
+          access: Allow
+          priority: 1001
+          direction: Inbound
+        - name: web
+          protocol: Tcp
+          destination_port_range: 80
+          access: Allow
+          priority: 1002
+          direction: Inbound
+  - name: Utworz virtual network interface card
+    azure_rm_networkinterface:
+      resource_group: 1-b3a93a02-playground-sandbox
+      name: dvwaNIC
+      virtual_network: dvwaVNET
+      subnet: dvwaPodsiec
+      public_ip_name: dvwaPublic
+      security_group: dvwaNSG
+  - name: Create VM
+    azure_rm_virtualmachine:
+      resource_group: 1-b3a93a02-playground-sandbox
+      name: dvwaVM
+      vm_size: Standard_DS1_v2
+      admin_username: cloud
+      admin_password: KRA615sal123!
+      ssh_password_enabled: false
+      ssh_public_keys:
+        - path: /home/cloud/.ssh/authorized_keys
+          key_data: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDAkPnU6YEA8jtZARCRC8xH5G5JLWro4T8eyR9xc5Db/kzC47xiJXm95sh8zbggSYqruhYqAExEN/vLLkXLZYIGsHCKfhGyTS+CKb/WIP5kz20xJEUFy5m460puzgv138AnTngOxsknBJdqmrV7SWF4J3HPXCY9+k1s0Grv56Tm+o0iwcUzZywYirdKmARa4RCzTVUFWtO/LfrGGpOhDS6OZHyW1aY/AwZ/11r/ip5fJ3zO1WPDMIPh0XSj0LGjGxKQvls3Al8hK/j5gs2iPiNp1ZbaJ94Y+6v0LraBiVu5dftpt9xujMGwLrE+HSFFHZ6OhuVXXg+6cy71+QV/GV2mdoynXQMM0S6ws/Wee9DsE5pJpv7oSLeTAqudacCLqNUdyJl1SRNPCy5XonzoxscQf6I+vSIlPBpYSrqdzrCPrpo8hT5gfLU7e5DcxxAI1qmzTqgqrVRMeGfGLNyDcs2/kNyfb+KDeqJJEaD32B4V/HpikkrfqSdCFUd1wlIacp/6ZtdsrRJJfb4E/K8f+Ryl3ZkT96GNOu6e4jweIcAFrNAfGipwijqKs+t7dkxqZiq80Qvb6PTisy2bEuytAXIKuZJQq0/czRFLCuUSZq/CSck5Vxmhg6NTzjWoeq8oUfn5vL8d+tclDJQ/6pjpFaSnAtNZOmYvO5MPaSUJmoAXdw== cloud@cc-cc0cfbc3-b87885845-r2nvx"
+      network_interfaces: dvwaNIC
+      managed_disk_type: Standard_LRS
+      image:
+        offer: 0001-com-ubuntu-server-focal
+        publisher: canonical
+        sku: 20_04-lts
+        version: latest
+      os_type: Linux

@@ -1,0 +1,41 @@
+---
+- name: Zainstaluj Docker na Linux VM
+  hosts: dvwaservers
+  become: true
+  tasks:
+    - name: docker.io
+      apt:
+        update_cache: yes
+        name: docker.io
+        state: present
+
+    - name: Instalacja pip3 
+      apt:
+        name: python3-pip
+        state: present
+
+    - name: Instalacja Docker python module
+      pip:
+        name: docker
+        state: present
+
+    - name: Pobierz i uruchom kontener DVWA
+      docker_container:
+        name: dvwa
+        image: cyberxsecurity/dvwa
+        state: started
+        restart_policy: always
+        published_ports: 80:80
+      
+    - name: Pobierz i uruchom kontener Mutilidae
+      docker_container:
+        name: nowasp
+        image: citizenstig/nowasp
+        state: started
+        restart_policy: always
+        published_ports: 81:80
+
+    - name: Uruchomiaj Docker przy uruchomieniu VM
+      systemd:
+        name: docker
+        enabled: yes
