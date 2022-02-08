@@ -4,18 +4,18 @@
   tasks:
   - name: Utworz siec vnet
     azure_rm_virtualnetwork:
-      resource_group: 1-08b89762-playground-sandbox
+      resource_group: 1-9aa2d4a2-playground-sandbox
       name: dvwaVNET
       address_prefixes: "10.0.0.0/16"
   - name: Dodaj podsiec
     azure_rm_subnet:
-      resource_group: 1-08b89762-playground-sandbox
+      resource_group: 1-9aa2d4a2-playground-sandbox
       name: dvwaPodsiec
       address_prefix: "10.0.1.0/24"
       virtual_network: dvwaVNET
   - name: Utworz publiczny adres
     azure_rm_publicipaddress:
-      resource_group: 1-08b89762-playground-sandbox
+      resource_group: 1-9aa2d4a2-playground-sandbox
       allocation_method: Static
       name: dvwaPublic
     register: output_ip_address
@@ -24,7 +24,7 @@
       msg: "Publiczne IP to {{ output_ip_address.state.ip_address }}."
   - name: Utworz Network Security Group i wpusc SSH oraz http
     azure_rm_securitygroup:
-      resource_group: 1-08b89762-playground-sandbox
+      resource_group: 1-9aa2d4a2-playground-sandbox
       name: dvwaNSG
       rules:
         - name: SSH
@@ -41,7 +41,7 @@
           direction: Inbound
   - name: Utworz virtual network interface card
     azure_rm_networkinterface:
-      resource_group: 1-08b89762-playground-sandbox
+      resource_group: 1-9aa2d4a2-playground-sandbox
       name: dvwaNIC
       virtual_network: dvwaVNET
       subnet: dvwaPodsiec
@@ -49,7 +49,7 @@
       security_group: dvwaNSG
   - name: Create VM
     azure_rm_virtualmachine:
-      resource_group: 1-08b89762-playground-sandbox
+      resource_group: 1-9aa2d4a2-playground-sandbox
       name: dvwaVM
       vm_size: Standard_DS1_v2
       admin_username: cloud
