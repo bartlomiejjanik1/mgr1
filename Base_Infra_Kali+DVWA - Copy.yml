@@ -4,18 +4,18 @@
   tasks:
   - name: Utworz siec vnet
     azure_rm_virtualnetwork:
-      resource_group: 1-6950991e-playground-sandbox
+      resource_group: 1-08b89762-playground-sandbox
       name: dvwaVNET
       address_prefixes: "10.0.0.0/16"
   - name: Dodaj podsiec
     azure_rm_subnet:
-      resource_group: 1-6950991e-playground-sandbox
+      resource_group: 1-08b89762-playground-sandbox
       name: dvwaPodsiec
       address_prefix: "10.0.1.0/24"
       virtual_network: dvwaVNET
   - name: Utworz publiczny adres
     azure_rm_publicipaddress:
-      resource_group: 1-6950991e-playground-sandbox
+      resource_group: 1-08b89762-playground-sandbox
       allocation_method: Static
       name: dvwaPublic
     register: output_ip_address
@@ -24,7 +24,7 @@
       msg: "Publiczne IP to {{ output_ip_address.state.ip_address }}."
   - name: Utworz Network Security Group i wpusc SSH oraz http
     azure_rm_securitygroup:
-      resource_group: 1-6950991e-playground-sandbox
+      resource_group: 1-08b89762-playground-sandbox
       name: dvwaNSG
       rules:
         - name: SSH
@@ -41,7 +41,7 @@
           direction: Inbound
   - name: Utworz virtual network interface card
     azure_rm_networkinterface:
-      resource_group: 1-6950991e-playground-sandbox
+      resource_group: 1-08b89762-playground-sandbox
       name: dvwaNIC
       virtual_network: dvwaVNET
       subnet: dvwaPodsiec
@@ -49,7 +49,7 @@
       security_group: dvwaNSG
   - name: Create VM
     azure_rm_virtualmachine:
-      resource_group: 1-6950991e-playground-sandbox
+      resource_group: 1-08b89762-playground-sandbox
       name: dvwaVM
       vm_size: Standard_DS1_v2
       admin_username: cloud
@@ -57,7 +57,7 @@
       ssh_password_enabled: false
       ssh_public_keys:
         - path: /home/cloud/.ssh/authorized_keys
-          key_data: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC2uL+vu9Rj98aQE3W4KNLL6FAF5P3lx8bsynOfDxTiHImg59ACR9HCicojtHBBrZ+rPcYsw4qVTyk2BPmRF+x4yRgvbz9j0+MC0bztaW72d3jIR6C2yvWGV8SulNWp4EgHyqfrocHj3VXUnoHNS6/l152KCA+O52inuDW5qjsVucuCTiUucLemir4KBL4jaqXwGgDvIj6Kxk0ylnUNelCM7LoddKKw1wSmsiNchZHB559h6OG/xOs+darZxkwxU+xnx/+7Uam8vmvCI7ppVILuqyqCtiCNTBBVIxLmDBuL0+AipeqMWbvpK5R0ocU68jA789bWRWyQWfcNtBgEUudk6M0XcT/yx7+jDJluQRb8DwI7hxCYiJgpAJyJP46SM2olYnreW6TN/Q5T9fV9ShmQm80gSFEi/UP7eMPgsPc3bIPsIbOvFw2GXDQgGZXPbzD52DP84JTV/894EgBrKtDmFv3+1THksyHSwBX6IxAFnV7jkQTyuKieZIyu6AA1qShb9nI+Ue4zpuqbchD6KyUtBrbDBzxUkS1j/rB+sRowO/iGkiarJ0PjW/WdMz78RfIOQGFf7uq9mmFLKwTJsZTWHLFJms6OfBhomLAkVxSPr5VEbgytny7b0Ivg95gOZ8pqUGHcSbkIV1pSOC13svaFhS2zkEOxuPjpNGwTjnQysw== cloud@cc-b03cfd05-54dfc97fc4-7w55f"
+          key_data: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC8KbKnqYkiUvwaPdtfjNdX285E0Znt2hsho1HkuHTO8iD17StHbKdzRGAONg0qKt1/t8I8RXbLpyfLUTn5f9TDz/wNxxsaeFPM4vaJbFg3H9FojVVJkjpl5vH1Kra7cGKWvnUBQCqSoVQ1kCCzjudvtRbKPyO1xHhiOQ8Us5XNA3lJRbLT92CW71iMaU8XnZllO1FDJDM4Em3UmjeoRNeZJbgvXS8AohSYB9nwyrViWQbqz/YMzwNpO9oBtK39rTianaEBjSB5Jno4Hjjoz1JBR351KXHIBCg1SCC/OMRkDGRfNMYxyYog0dQCVbemf36z+mDGns3Wat0IhP3F6EfH5/iGFf6qL+thJJPH1LuDnBByrWvFWeJwwU0V0qsMag94XHcFUyWDcGEbSLbvLsyd1VS3mhZmnU+ICpWXfqI13c3A5lTOafpOeKUwNRxjcoR++STyyFS42M6CMVFqNZpHI+chILVZGDOsKx46nJWs1g4jhdmB3tN7qIqMJdf5jqO3yROs+LhY9sdz81HASyABAuxjvkcAGB3T6U0UISK58nJbguey8krSF8FcvHOGyOOycIkJhVzIVA/VPuHCm5w2pJigoV/pgfOr26IX9Cr8KMYX1iVZ/78UyHZ2jcy1hCBhIa94JCkUFXKiyEHOWL0HP1TrfP4kz6+oSWBFHyOMCQ== cloud@cc-8a100f3e-648dbf7dd5-rfvr2"
       network_interfaces: dvwaNIC
       managed_disk_type: Standard_LRS
       image:
