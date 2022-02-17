@@ -2,7 +2,7 @@
   hosts: localhost
   connection: local
   vars:
-    resource_group: "1-f29dcd68-playground-sandbox"
+    resource_group: "PWRG"
   tasks:
   - name: Utworz siec vnet
     azure_rm_virtualnetwork:
@@ -29,17 +29,17 @@
       resource_group: "{{ resource_group }}"
       name: dvwaNSG
       rules:
-        - name: SSH
+        - name: default-allow-ssh
           protocol: Tcp
           destination_port_range: 22
           access: Allow
-          priority: 1010
+          priority: 1000
           direction: Inbound
         - name: web
           protocol: Tcp
           destination_port_range: 80
           access: Allow
-          priority: 1020
+          priority: 1010
           direction: Inbound
   - name: Utworz virtual network interface card
     azure_rm_networkinterface:
@@ -55,11 +55,8 @@
       name: dvwaVM
       vm_size: Standard_DS1_v2
       admin_username: cloud
-      admin_password: KRA615sal123!
+      admin_password: !KRA615sal123
       ssh_password_enabled: false
-      ssh_public_keys:
-        - path: /home/cloud/.ssh/authorized_keys
-          key_data: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDcLKojUATCiSyb2Z3b5HOjXFC5B+n7mpXWIcbhvc8dkF4YN1K3Uv5v7XZE4JAz6yNeYVmns0+CukhOMXCTs5WVDgOYhgXbfM6iDNb8YL2kkjMAQnpQibMWddyIVyQ1MW1YSeFkq5uknzmp6w6vSL8AMPXknsJ+/CPx8Qh74NRpk89H7pPWZvMJRjpkA5VDygQSFhKxnsUER2YDb+ZVlw/wLrP+hBhBwsUE4ZCGE2TZ63s6rc0Fs9SpJqgP5piyvZl8caMwsEjOv8yMxe2MI76DR3QAukD7l8wFVVfz/FNOtfae5j77IUza6VhiareG1H+tsMB3N5L0246NXJB+TLYNvXwxgTWd7ZGhxuJdmSGivEoiFsUwPVYT8xZ4xphbI4M5ehMeng/Nimu/5wdicvSCmQe+JwwQFQJpLosVReNSzs5KopfWfnvl66//coJN6OXGCyjDz6i1cgRRULiV7mtLkC8yV/UPzG+h1IdEKW9BB+GoPx7t2kbC3Ysd9LgtE+lLAmiuaE0dEkU1KqEMzBl25d/ZPnVd8iwEDDNpFfu7RU83EUmMQic2OddYBIqk9m7NT6ryyGKoIQUVRwh+RM1nj3Vz1TUFMcQwO9voAmnz5wz9RrqS5jLrwT/JBDq8cUvgKhgc0Fw1XPEy5YL5+CFIACHrsLDOJRtm7NEGE7FJxQ== cloud@cc-609cfd4b-686bd965bf-bfjmt"
       network_interfaces: dvwaNIC
       managed_disk_type: Standard_LRS
       image:
