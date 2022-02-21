@@ -22,7 +22,7 @@
     - name: Pobierz i uruchom kontener DVWA
       docker_container:
         name: dvwa
-        image: cyberxsecurity/dvwa
+        image: infoslack/dvwa
         state: started
         restart_policy: always
         published_ports: 80:80
